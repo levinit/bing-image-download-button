@@ -1,261 +1,156 @@
-<head></head>
-
-<body>
-  <fieldset id="btn-settings">
-    <legend>settings</legend>
-
-    <div class="settings-content">
-
-      <ul class="btn-styles">
+<fieldset id="btn-settings">
+  <legend>settings</legend>
+  <div class="settings-content">
+    <ul class="img-infos">
+      <header>
+        Image Info
+      </header>
+      <li>
         <header>
-          Button Style
+          Image Name contains:
         </header>
-        <li>
-          <label>text color:</label>
-          <input class="btn-style" data-property="color" type="text" />
-        </li>
-        <li>
-          <label>text font-size:</label>
-          <input class="btn-style" data-property="font-size" type="text" />
-        </li>
-        <li>
-          <label>botton background:</label>
-          <input class="btn-style" data-property="background" type="text" />
-        </li>
-        <li>
-          <label>button position:</label>
-          <ul class="btn-position">
-            <li>
-              <div>
-                <input type="radio" name="horizon" value="left">left
-                <input class="btn-style" data-property="left" type="text" />
-              </div>
-              <div>
-                <input type="radio" name="horizon" value="right" checked>right
-                <input class="btn-style" data-property="right" type="text" />
-              </div>
-            </li>
-            <li>
-              <div>
-                <input type="radio" name="vertical" value="top" checked>top
-                <input class="btn-style" data-property="top" type="text" />
-              </div>
-              <div>
-                <input type="radio" name="vertical" value="bottom">bottom
-                <input class="btn-style" data-property="bottom" type="text" />
-              </div>
-            </li>
-          </ul>
-        </li>
-      </ul>
-      <ul class="img-infos">
+        <div>
+          <label>Base-Name</label>
+          <input class="img-info" type="checkbox" name="name-rule" checked data-img-name-rule="baseName" />
+        </div>
+        <div>
+          <label>NO.</label>
+          <input class="img-info" type="checkbox" name="name-rule" data-img-name-rule="imgNO"
+            ${savedImgNameRule['imgNO'] ? 'checked' : '' } />
+        </div>
+        <div>
+          <label>Resolution</label>
+          <input class="img-info" type="checkbox" name="name-rule" data-img-name-rule="imgResolution"
+            ${savedImgNameRule['imgResolution'] ? 'checked' : '' } />
+        </div>
+        <div>
+          <label>Description</label>
+          <input class="img-info" type="checkbox" name="name-rule" data-img-name-rule="description"
+            ${savedImgNameRule['description'] ? 'checked' : '' } />
+        </div>
+        <div>
+          <label>CopyRight</label>
+          <input class="img-info" type="checkbox" name="name-rule" data-img-name-rule="copyright"
+            ${savedImgNameRule['copyright'] ? 'checked' : '' } />
+        </div>
+        <div>
+          <label>Date-Info</label>
+          <input class="img-info" type="checkbox" name="name-rule" data-img-name-rule="dateInfo"
+            ${savedImgNameRule['dateInfo'] ? 'checked' : '' } />
+        </div>
+      </li>
+      <li>
         <header>
-          Image Info
+          Image Resolution
         </header>
-        <li>
-          <header>
-            Image Name contains:
-          </header>
-          <div>
-            <label>Base-Name</label>
-            <input class="img-info" type="checkbox" name="img-name-rule" checked data-img-name-rule="BaseName"
-              disabled />
-          </div>
-          <div>
-            <label>Image-NO.</label>
-            <input class="img-info" type="checkbox" name="img-name-rule" data-img-name-rule="imgNO" />
-          </div>
-          <div>
-            <label>Image-Resolution.</label>
-            <input class="img-info" type="checkbox" name="img-name-rule" data-img-name-rule="ImgResolution" />
-          </div>
-        </li>
-        <li>
-          <header>
-            Image Resolution
-          </header>
-          <div>
-            <label>1920x1080<small>(Default)</small></label>
-            <input class="img-info" type="radio" name="img-resolution" data-img-resolution="1920x1080" checked />
-          </div>
-          <div>
-            <label>1366X768</label>
-            <input class="img-info" type="radio" name="img-resolution" data-img-resolution="1366X768" />
-          </div>
-          <div>
-            <label>1280x720</label>
-            <input class="img-info" type="radio" name="img-resolution" data-img-resolution="1280x720" />
-          </div>
-        </li>
-        <li class="about">
-          <header>About</header>
-          <a href="${info.about.github}">GitHub</a>
-          <br />
-          <a href="${info.about.greasyfork}">GreasyFork</a>
-        </li>
-      </ul>
+        <div>
+          <label>Default</label>
+          <input class="img-info" type="radio" name="resolution" data-img-resolution="" ${savedImgResolution===''
+            ? 'checked' : '' } />
+        </div>
+        <div>
+          <label>1920x1080</label>
+          <input class="img-info" type="radio" name="resolution" data-img-resolution="1920x1080"
+            ${savedImgResolution==='1920x1080' ? 'checked' : '' } />
+        </div>
+        <div>
+          <label>1366x768</label>
+          <input class="img-info" type="radio" name="resolution" data-img-resolution="1366x768"
+            ${savedImgResolution==='1366x768' ? 'checked' : '' } />
+        </div>
+        <div>
+          <label>1280x720</label>
+          <input class="img-info" type="radio" name="resolution" data-img-resolution="1280x720"
+            ${savedImgResolution==='1280x720' ? 'checked' : '' } />
+        </div>
+      </li>
+    </ul>
+    <div class="about">
+      About:
+      <a href="${info.about.github}">GitHub</a>
+      <a href="${info.about.greasyfork}">GreasyFork</a>
     </div>
+  </div>
+  <footer>
+    <button id="${menuInfo.resetBtnId}" class="reset-btn">reset</button>
+    <button id="${menuInfo.saveBtnId}" class="${menuInfo.closeBtnClass}">save</button>
+    <button class="${menuInfo.closeBtnClass}">cancel</button>
+  </footer>
+</fieldset>
 
-    <footer>
-      <button id="${menuInfo.resetBtnId}" class="reset-btn">reset</button>
-      <button id="${menuInfo.saveBtnId}" class="${menuInfo.closeBtnClass}">save</button>
-      <button class="${menuInfo.closeBtnClass}">cancel</button>
-    </footer>
-  </fieldset>
-  <style>
-    #btn-settings {
-      width: 500px;
-      border: 1px dashed gainsboro;
-      border-radius: 8px;
-      box-shadow: 0 0 10px gainsboro;
-      background-color: aliceblue;
-    }
+<style>
+  #btn-settings {
+    width: 300px;
+    border: 1px dashed gainsboro;
+    border-radius: 8px;
+    box-shadow: 0 0 10px gainsboro;
+    background-color: aliceblue;
+  }
 
-    #btn-settings legend {
-      font-weight: bold;
-      text-shadow: 0 0 2px gray;
-      color: steelblue;
-    }
-
-    .settings-content {
-      display: flex;
-      justify-content: space-between;
-      border-bottom: 1px solid gainsboro;
-      margin-bottom: 0.5em;
-    }
-
-    .btn-styles {
-      width: 55%;
-    }
-
-    #btn-settings ul {
-      display: flex;
-      flex-wrap: wrap;
-      padding: 0;
-    }
-
-    .img-infos {
-      width: 40%;
-      display: block !important;
-    }
-
-    #btn-settings ul>header {
-      width: 100%;
-      border-bottom: 3px groove gainsboro;
-      font-weight: bold;
-      color: slategrey;
-      text-shadow: 0 0 5px gainsboro;
-      margin-bottom: 0.5em;
-    }
-
-    #btn-settings li {
-      list-style-type: none;
-      border-bottom: 1px dashed gainsboro;
-      padding-bottom: 0.5em;
-    }
-
-    .btn-styles li {
-      display: flex;
-      flex-wrap: wrap;
-      width: 100%;
-    }
-
-    .btn-styles li * {
-      width: 95%;
-    }
-
-    .btn-position li {
-      width: 47.5%;
-      margin-right: 2.5%;
-      border-bottom: none !important;
-    }
-
-    .btn-position li input[type=radio] {
-      width: auto;
-      height: 20px;
-    }
-
-    .btn-position input.btn-style {
-      width: 85%;
-    }
-
-    .img-infos label {
-      width: 80%;
-      display: inline-block;
-    }
-
-    .img-infos li header {
-      color: sienna;
-      margin-bottom: 0.25em;
-    }
-
-    #btn-settings footer {
-      text-align: right;
-    }
-
-    #btn-settings footer button {
-      width: 88px;
-      cursor: pointer;
-      font-size: 1.2em;
-      font-weight: bold;
-      line-height: 1.25;
-      text-align: center;
-      padding: 0;
-      color: teal;
-    }
-
-    #btn-settings footer .reset-btn {
-      margin-right: 10em;
-      color: tomato;
-    }
-
-    #btn-settings .about {
-      border: 1px dotted gainsboro;
-      margin-top: 8em;
-      text-align: right;
-    }
-
-    #btn-settings .about header {
-      color: slategray;
-      font-size: 1.25em;
-    }
-  </style>
-  <script>
-    function saveSettings() {
-      //btn-styles
-      const styles = {}
-      for (const item of document.querySelectorAll('.btn-style')) {
-        let value = item.value
-        if (item.value === "" || item.previousElementSibling.type === 'radio' && item.previousElementSibling.checked === false) {
-          continue
-        }
-        const property = item.getAttribute('data-property')
-        styles[property] = value
-      }
+  #btn-settings legend {
+    font-weight: bold;
+    text-shadow: 0 0 2px gray;
+    color: steelblue;
+  }
 
 
-      //img-info
-      const imgInfo = {
-        'img-name-rule': {}
-      }
+  #btn-settings ul {
+    padding: 0;
+  }
 
-      for (const item of document.querySelectorAll('.img-info')) {
-        if (item.checked === false) {
-          continue
-        }
-        //图片命名规则
-        if (item.name === 'img-name-rule') {
-          const property = item.getAttribute('data-img-name-rule')
-          imgInfo['img-name-rule'][property] = true
-        }
+  #btn-settings ul>header {
+    width: 100%;
+    border-bottom: 3px groove gainsboro;
+    font-weight: bold;
+    color: slategrey;
+    text-shadow: 0 0 5px gainsboro;
+    margin-bottom: 0.5em;
+  }
+
+  #btn-settings li {
+    list-style-type: none;
+    border-bottom: 1px dashed gainsboro;
+    padding-bottom: 0.5em;
+  }
 
 
-        if (item.name === 'img-resolution') {
-          imgInfo['img-resolution'] = true
-        }
+  .img-infos label {
+    width: 80%;
+    display: inline-block;
+  }
 
-      }
-      return { styles, imgInfo }
-    }
-  </script>
-</body>
+  .img-infos li header {
+    color: sienna;
+    margin-bottom: 0.25em;
+  }
+
+  #btn-settings .about {
+    text-align: right;
+    margin-bottom: 1em;
+
+  }
+
+  #btn-settings .about a {
+    margin-right: 1em;
+  }
+
+  #btn-settings footer {
+    text-align: right;
+  }
+
+  #btn-settings footer button {
+    width: 88px;
+    cursor: pointer;
+    font-size: 1.2em;
+    font-weight: bold;
+    line-height: 1.25;
+    text-align: center;
+    padding: 0;
+    color: teal;
+  }
+
+  #btn-settings footer .reset-btn {
+    margin-right: 25px;
+    color: tomato;
+  }
+</style>
