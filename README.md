@@ -2,6 +2,8 @@
 
 [Bing](https://bing.com) Image Download Button|[必应](https://bing.com)图片下载按钮
 
+在按钮上打开右键菜单可进行图片相关设置。Right click download btton to open the settings menu.
+
 # 安装Installation
 
 1. 为你的浏览器安装一个[脚本管理器](https://greasyfork.org/)   Install a [user script manager](https://greasyfork.org/) for your browser
