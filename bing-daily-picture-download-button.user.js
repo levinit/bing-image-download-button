@@ -18,7 +18,7 @@
 // @include     *://www.bing.com/?*
 // @include     *://cn.bing.com/?*
 // @run-at      document-start
-// @version     1.0
+// @version     1.0.1
 // @grant       none
 // ==/UserScript==
 
@@ -105,7 +105,7 @@ const bingDownloadBtnConfig = {
     github: 'https://github.com/levinit/bing-image-download-button',
     greasyfork: 'https://greasyfork.org/zh-TW/scripts/35070-bing-image-download-button'
   },
-  //本地存储菜单中设置的信息 使用的key
+  //本地存储 菜单中设置的信息 使用的key
   localStoreKey: 'bingImgDownload'
 }
 
@@ -194,7 +194,7 @@ function getImgInfo(imgInfo, url) {
           resolution = `_${nameInfo[2]}`.split('.')[0]
           break;
         case 'dateInfo':
-          dateInfo = `_${now.getFullYear()}-${now.getMonth()}-${now.getDate()}`
+          dateInfo = `_${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()}`
           break;
         case 'description':
           description = `_${imgDescription[0].replace(/\($/, '')}`
@@ -207,8 +207,11 @@ function getImgInfo(imgInfo, url) {
       }
     }
   }
+
+  //拼接图片名字 去掉前后可能出现的_
   let name = `${baseName}${imgNO}${resolution}${description}${copyright}${dateInfo}`.replace(/^_/, '').replace(/_$/, '')
 
+  //如果图片没有名字只有后缀 强行给图片加上名字
   if (name === `.${imgFormat}`) {
     name = `${nameInfo[0]}.${imgFormat}`
   } else {
@@ -257,10 +260,6 @@ function addBtn(info) {
 
     this.href = info.imgInfo.url
     this.download = info.imgInfo.name
-    console.log(`name:${info.imgInfo.name}
-url:${info.imgInfo.url}
-resolution:${info.imgInfo.resolution}
-`)
   }
 
   //右键打开设置菜单
@@ -450,7 +449,7 @@ function addMenu(info) {
   document.body.appendChild(menu)
 
 
-  //菜单的事件绑定：保存重置和取消
+  //菜单的事件绑定：保存 重置 和 取消
   menu.onclick = function (e) {
     if (e.target.classList.contains(menuInfo.closeBtnClass)) {
       //如果点击的保存或取消按钮 关闭设置菜单
