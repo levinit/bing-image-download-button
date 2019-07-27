@@ -18,7 +18,7 @@
 // @include     *://www.bing.com/?*
 // @include     *://cn.bing.com/?*
 // @run-at      document-start
-// @version     1.0.1
+// @version     1.0.2
 // @grant       none
 // ==/UserScript==
 
@@ -79,7 +79,7 @@ const bingDownloadBtnConfig = {
       'imgNO': false,
       'imgResolution': false,
       'dateInfo': true,
-      'description': false,  //图片描述信息
+      'description': true,  //图片描述信息
       'copyright': false  //图片版权信息
     },
     //图片分辨率 不设置则使用默认 默认分辨率一般和当前系统设置、显示器分辨率有关
@@ -131,6 +131,8 @@ window.addEventListener(
     once: true
   })
 
+let dateOffset = 0  //可以查看前7天图片 0-7
+
 //从本地存储中取得设置的信息写入到bingDownloadBtn各个项中
 function getSavedSettings(info) {
   if (localStorage.getItem(info.localStoreKey)) {
@@ -148,7 +150,22 @@ function getSavedSettings(info) {
 
     //写入图片设置信息 （命名规则和分辨率)
     setSettings(info.imgInfo, savedSettings.imgInfo)
+
+    //绑定点击上一个/下一个图片时更新日期信息的事件
+    getDateOffset()
   }
+}
+
+function getDateOffset() {
+  document.getElementById("sh_lt").addEventListener('click', function (e) {
+    e.preventDefault()
+    dateOffset = dateOffset === -7 ? -7 : dateOffset - 1
+  })
+
+  document.getElementById("sh_rt").addEventListener('click', function (e) {
+    e.preventDefault()
+    dateOffset = dateOffset === 0 ? 0 : dateOffset + 1
+  })
 }
 
 //-----获取图片信息(根据设置规则修改）
@@ -174,10 +191,12 @@ function getImgInfo(imgInfo, url) {
   // 图片描述信息
   const imgDescription = document.getElementById(imgInfo['desc-ele-id']).title.split('©')
 
-  let [baseName, imgNO, resolution, description, copyright, dateInfo] = ['', '', '', '', '', '']
-
   //日期信息
   const now = new Date()
+  const imgDate = new Date(`${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate() + dateOffset}`)
+
+  //初始化所有项
+  let [baseName, imgNO, resolution, description, copyright, dateInfo] = ['', '', '', '', '', '']
 
   //根据名字生成规则修改图片名字
   for (const rule in imgInfo['name-rule']) {
@@ -194,7 +213,7 @@ function getImgInfo(imgInfo, url) {
           resolution = `_${nameInfo[2]}`.split('.')[0]
           break;
         case 'dateInfo':
-          dateInfo = `_${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()}`
+          dateInfo = `_${imgDate.getFullYear()}-${imgDate.getMonth() + 1}-${imgDate.getDate()}`
           break;
         case 'description':
           description = `_${imgDescription[0].replace(/\($/, '')}`
@@ -239,7 +258,7 @@ function addBtn(info) {
   btn.href = info.imgInfo.url  //图片下载地址
   btn.download = info.imgInfo.name  //图片下载名字
   btn.title = `img name: ${info.imgInfo.name}
-  右键打开设置菜单|Right Click this button to open settings menu`
+          右键打开设置菜单 | Right Click this button to open settings menu`
   document.body.appendChild(btn)
 
   //更新下载信息 点击了前一天或后一天按钮后 需要刷新img的下载地址
@@ -279,163 +298,163 @@ function addMenu(info) {
   const savedImgNameRule = info.imgInfo['name-rule']
 
   const menuContent = `
-  <fieldset id="btn-settings">
-  <legend>settings</legend>
-  <div class="settings-content">
-    <ul class="img-infos">
-      <header>
-        Image Info
+            < fieldset id = "btn-settings" >
+              <legend>settings</legend>
+              <div class="settings-content">
+                <ul class="img-infos">
+                  <header>
+                    Image Info
       </header>
-      <li>
-        <header>
-          Image Name contains:
+                  <li>
+                    <header>
+                      Image Name contains:
         </header>
-        <div>
-          <label>Base-Name</label>
-          <input class="img-info" type="checkbox" name="name-rule" checked data-img-name-rule="baseName" />
-        </div>
-        <div>
-          <label>NO.</label>
-          <input class="img-info" type="checkbox" name="name-rule" data-img-name-rule="imgNO"
-            ${savedImgNameRule['imgNO'] ? 'checked' : ''} />
-        </div>
-        <div>
-          <label>Resolution</label>
-          <input class="img-info" type="checkbox" name="name-rule" data-img-name-rule="imgResolution"
-            ${savedImgNameRule['imgResolution'] ? 'checked' : ''} />
-        </div>
-        <div>
-          <label>Description</label>
-          <input class="img-info" type="checkbox" name="name-rule" data-img-name-rule="description"
-            ${savedImgNameRule['description'] ? 'checked' : ''} />
-        </div>
-        <div>
-          <label>CopyRight</label>
-          <input class="img-info" type="checkbox" name="name-rule" data-img-name-rule="copyright"
-            ${savedImgNameRule['copyright'] ? 'checked' : ''} />
-        </div>
-        <div>
-          <label>Date-Info</label>
-          <input class="img-info" type="checkbox" name="name-rule" data-img-name-rule="dateInfo"
-            ${savedImgNameRule['dateInfo'] ? 'checked' : ''} />
-        </div>
-      </li>
-      <li>
-        <header>
-          Image Resolution
+                    <div>
+                      <label>Base-Name</label>
+                      <input class="img-info" type="checkbox" name="name-rule" checked data-img-name-rule="baseName" />
+                    </div>
+                    <div>
+                      <label>NO.</label>
+                      <input class="img-info" type="checkbox" name="name-rule" data-img-name-rule="imgNO"
+                        ${savedImgNameRule['imgNO'] ? 'checked' : ''} />
+                    </div>
+                    <div>
+                      <label>Resolution</label>
+                      <input class="img-info" type="checkbox" name="name-rule" data-img-name-rule="imgResolution"
+                        ${savedImgNameRule['imgResolution'] ? 'checked' : ''} />
+                    </div>
+                    <div>
+                      <label>Description</label>
+                      <input class="img-info" type="checkbox" name="name-rule" data-img-name-rule="description"
+                        ${savedImgNameRule['description'] ? 'checked' : ''} />
+                    </div>
+                    <div>
+                      <label>CopyRight</label>
+                      <input class="img-info" type="checkbox" name="name-rule" data-img-name-rule="copyright"
+                        ${savedImgNameRule['copyright'] ? 'checked' : ''} />
+                    </div>
+                    <div>
+                      <label>Date-Info</label>
+                      <input class="img-info" type="checkbox" name="name-rule" data-img-name-rule="dateInfo"
+                        ${savedImgNameRule['dateInfo'] ? 'checked' : ''} />
+                    </div>
+                  </li>
+                  <li>
+                    <header>
+                      Image Resolution
         </header>
-        <div>
-          <label>1920x1080</label>
-          <input class="img-info" type="radio" name="resolution" data-img-resolution="1920x1080"
-            ${savedImgResolution === '1920x1080' ? 'checked' : ''} />
-        </div>
-        <div>
-          <label>1366x768</label>
-          <input class="img-info" type="radio" name="resolution" data-img-resolution="1366x768"
-            ${savedImgResolution === '1366x768' ? 'checked' : ''} />
-        </div>
-        <div>
-          <label>1280x720</label>
-          <input class="img-info" type="radio" name="resolution" data-img-resolution="1280x720"
-            ${savedImgResolution === '1280x720' ? 'checked' : ''} />
-        </div>
-        <div>
-        <label>Default</label>
-        <input class="img-info" type="radio" name="resolution" data-img-resolution="" ${savedImgResolution === ''
+                    <div>
+                      <label>1920x1080</label>
+                      <input class="img-info" type="radio" name="resolution" data-img-resolution="1920x1080"
+                        ${savedImgResolution === '1920x1080' ? 'checked' : ''} />
+                    </div>
+                    <div>
+                      <label>1366x768</label>
+                      <input class="img-info" type="radio" name="resolution" data-img-resolution="1366x768"
+                        ${savedImgResolution === '1366x768' ? 'checked' : ''} />
+                    </div>
+                    <div>
+                      <label>1280x720</label>
+                      <input class="img-info" type="radio" name="resolution" data-img-resolution="1280x720"
+                        ${savedImgResolution === '1280x720' ? 'checked' : ''} />
+                    </div>
+                    <div>
+                      <label>Default</label>
+                      <input class="img-info" type="radio" name="resolution" data-img-resolution="" ${savedImgResolution === ''
       ? 'checked' : ''} />
-      </div>
-      </li>
-    </ul>
-    <div class="about">
-      About:
+                    </div>
+                  </li>
+                </ul>
+                <div class="about">
+                  About:
       <a href="${info.about.github}">GitHub</a>
-      <a href="${info.about.greasyfork}">GreasyFork</a>
-    </div>
-  </div>
-  <footer>
-    <button id="${menuInfo.resetBtnId}" class="reset-btn">reset</button>
-    <button id="${menuInfo.saveBtnId}" class="${menuInfo.closeBtnClass}">save</button>
-    <button class="${menuInfo.closeBtnClass}">cancel</button>
-  </footer>
-</fieldset>
+                  <a href="${info.about.greasyfork}">GreasyFork</a>
+                </div>
+              </div>
+              <footer>
+                <button id="${menuInfo.resetBtnId}" class="reset-btn">reset</button>
+                <button id="${menuInfo.saveBtnId}" class="${menuInfo.closeBtnClass}">save</button>
+                <button class="${menuInfo.closeBtnClass}">cancel</button>
+              </footer>
+</fieldset >
 
-<style>
-  #btn-settings {
-    width: 300px;
-    border: 1px dashed gainsboro;
-    border-radius: 8px;
-    box-shadow: 0 0 10px gainsboro;
-    background-color: aliceblue;
-  }
+            <style>
+              #btn-settings {
+                width: 300px;
+              border: 1px dashed gainsboro;
+              border-radius: 8px;
+              box-shadow: 0 0 10px gainsboro;
+              background-color: aliceblue;
+            }
 
   #btn-settings legend {
-    font-weight: bold;
-    text-shadow: 0 0 2px gray;
-    color: steelblue;
-  }
+                font - weight: bold;
+              text-shadow: 0 0 2px gray;
+              color: steelblue;
+            }
 
 
   #btn-settings ul {
-    padding: 0;
-  }
+                padding: 0;
+            }
 
   #btn-settings ul>header {
-    width: 100%;
-    border-bottom: 3px groove gainsboro;
-    font-weight: bold;
-    color: slategrey;
-    text-shadow: 0 0 5px gainsboro;
-    margin-bottom: 0.5em;
-  }
+                width: 100%;
+              border-bottom: 3px groove gainsboro;
+              font-weight: bold;
+              color: slategrey;
+              text-shadow: 0 0 5px gainsboro;
+              margin-bottom: 0.5em;
+            }
 
   #btn-settings li {
-    list-style-type: none;
-    border-bottom: 1px dashed gainsboro;
-    padding-bottom: 0.5em;
-  }
+                list - style - type: none;
+              border-bottom: 1px dashed gainsboro;
+              padding-bottom: 0.5em;
+            }
 
 
   .img-infos label {
-    width: 80%;
-    display: inline-block;
-  }
+                width: 80%;
+              display: inline-block;
+            }
 
   .img-infos li header {
-    color: sienna;
-    margin-bottom: 0.25em;
-  }
+                color: sienna;
+              margin-bottom: 0.25em;
+            }
 
   #btn-settings .about {
-    text-align: right;
-    margin-bottom: 1em;
+                text - align: right;
+              margin-bottom: 1em;
 
-  }
+            }
 
   #btn-settings .about a {
-    margin-right: 1em;
-  }
+                margin - right: 1em;
+            }
 
   #btn-settings footer {
-    text-align: right;
-  }
+                text - align: right;
+            }
 
   #btn-settings footer button {
-    width: 88px;
-    cursor: pointer;
-    font-size: 1.2em;
-    font-weight: bold;
-    line-height: 1.25;
-    text-align: center;
-    padding: 0;
-    color: teal;
-  }
+                width: 88px;
+              cursor: pointer;
+              font-size: 1.2em;
+              font-weight: bold;
+              line-height: 1.25;
+              text-align: center;
+              padding: 0;
+              color: teal;
+            }
 
   #btn-settings footer .reset-btn {
-    margin-right: 25px;
-    color: tomato;
-  }
+                margin - right: 25px;
+              color: tomato;
+            }
 </style>
-`
+          `
   //添加菜单
   const menu = document.createElement('div')
   menu.innerHTML = menuContent
@@ -443,7 +462,7 @@ function addMenu(info) {
   let cssText = ''
   //设置菜单样式
   for (const style in menuInfo.menuWrapStyles) {
-    cssText += `${style}:${menuInfo.menuWrapStyles[style]};`
+    cssText += `${style}: ${menuInfo.menuWrapStyles[style]}; `
   }
   menu.style.cssText = cssText
   document.body.appendChild(menu)
