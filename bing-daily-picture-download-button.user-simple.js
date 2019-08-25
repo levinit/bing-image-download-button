@@ -121,7 +121,7 @@ function refreshBtn(info) {
     let newUrl = document.getElementById('bgDiv').style.backgroundImage
 
     //提取背景图片url（如果没有点击前一天或后一天按钮 background-image不存在 则newUrl内容是空的）
-    newUrl = newUrl ? newUrl.substring(5, newUrl.length - 2) : ''
+    newUrl = newUrl ? newUrl.substring(5, newUrl.length-2) : ''
 
     //比较前后两个url确定是否更新下载图片的地址和名字
     if (newUrl && this.href != location.origin + newUrl) {

@@ -22,9 +22,14 @@
 
 
 
-   访问[greasy fork - levinit](https://greasyfork.org/zh-TW/scripts/35070-bing-image-download-button)  -> 选择脚本 -> 点击**安装脚本**按钮
+   访问[greasy fork-levinit](https://greasyfork.org/zh-TW/scripts/35070-bing-image-download-button)  -> 选择脚本 -> 点击**安装脚本**按钮
 
-   Visit[greasy fork - levinit](https://greasyfork.org/zh-TW/scripts/35070-bing-image-download-button)  -> Select script -> Click **Install this script** button
+   Visit[greasy fork-levinit](https://greasyfork.org/zh-TW/scripts/35070-bing-image-download-button)  -> Select script -> Click **Install this script** button
+
+# 使用 Usage
+
+- 点击按钮下载必应背景图片 Left click the button to download Bing background picture
+- 右键按钮打开设置菜单 Right click the button to open the settings menu
 
 ---
 
