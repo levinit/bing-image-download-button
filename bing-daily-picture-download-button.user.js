@@ -345,6 +345,11 @@ function addMenu(info) {
             Image Resolution
           </header>
           <div>
+            <label>UHD</label>
+            <input class="img-info" type="radio" name="resolution" data-img-resolution="UHD"
+              ${savedImgResolution === 'UHD' ? 'checked' : ''} />
+          </div>
+          <div>
             <label>1920x1080</label>
             <input class="img-info" type="radio" name="resolution" data-img-resolution="1920x1080"
               ${savedImgResolution === '1920x1080' ? 'checked' : ''} />
