@@ -526,7 +526,9 @@ function getUserSettings() {
         break
       //分辨率
       case 'resolution':
-        imgInfo['resolution'] = item.getAttribute('data-img-resolution')
+        if(item.checked){
+          imgInfo['resolution'] = item.getAttribute('data-img-resolution')
+        }
         break
       default:
         break
