@@ -18,7 +18,7 @@
 // @include     *://www.bing.com/?*
 // @include     *://cn.bing.com/?*
 // @run-at      document-start
-// @version     1.0.3
+// @version     1.0.5
 // @grant       none
 // ==/UserScript==
 
