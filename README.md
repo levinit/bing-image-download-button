@@ -31,8 +31,3 @@
 - 点击按钮下载必应背景图片 Left click the button to download Bing background picture
 - 右键按钮打开设置菜单 Right click the button to open the settings menu
 ![settings设置](settings.png)
----
-
-![img](https://greasyfork.org/system/screenshots/screenshots/000/009/039/original/en.jpg?1510493743)
-
-![img](https://greasyfork.org/system/screenshots/screenshots/000/009/040/original/zh.jpg?1510493744)
