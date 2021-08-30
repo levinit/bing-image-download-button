@@ -18,7 +18,7 @@
 // @include     *://www.bing.com/?*
 // @include     *://cn.bing.com/?*
 // @run-at      document-start
-// @version     0.1.8
+// @version     0.2.0
 // @grant       none
 // ==/UserScript==
 
@@ -78,7 +78,7 @@ window.addEventListener(
   'load',
   function () {
     //进入bing页面后 图片地址写在了一个id为'bgLink'的a元素的href属性中
-    const initUrl = document.getElementById('bgLink').href
+    const initUrl ='https://cn.bing.com'+document.querySelector('.img_cont').style.backgroundImage.split('\"')[1]
     if (initUrl) {
       getImg(initUrl) //获取图片信息
       addBtn(btnInfo) //添加按钮
@@ -118,7 +118,8 @@ function refreshBtn(info) {
   document.getElementById(info.btnId).onmouseover = function () {
     //从id为bgDiv的元素上获取图片地址
     //点击了前一天或后一天按钮后 新图片地址将写在行内style的background-image属性中
-    let newUrl = document.getElementById('bgDiv').style.backgroundImage
+    let newUrl = document.querySelector("div.img_uhd").style.backgroundImage.split('\"')[1]
+
 
     //提取背景图片url（如果没有点击前一天或后一天按钮 background-image不存在 则newUrl内容是空的）
     newUrl = newUrl ? newUrl.substring(5, newUrl.length-2) : ''

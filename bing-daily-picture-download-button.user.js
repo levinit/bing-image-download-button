@@ -17,8 +17,8 @@
 // @include     *://www.bing.com/
 // @include     *://www.bing.com/?*
 // @include     *://cn.bing.com/?*
-// @run-at      document-start
-// @version     1.2.1
+// @run-at      document-end
+// @version     1.3.1
 // @grant       none
 // ==/UserScript==
 
@@ -73,7 +73,6 @@ const bingDownloadBtnConfig = {
   imgInfo: {
     url: '',
     name: "",
-    'desc-ele-id': 'sh_cp',  //含有图片描述信息的元素的id
     'name-rule': {  //图片默认命名规则，true项的内容将写入到图片名中
       //图片名字信息来自于图片的url 一般形如 flower_12345_1920x1080 形式
       'baseName': true,  //基础名字
@@ -117,8 +116,9 @@ window.addEventListener(
   function () {
     getSavedSettings(bingDownloadBtnConfig)  //从本地存储读取设置信息
 
-    //获取图片地址 进入bing页面后 图片地址写在了一个id为'bgLink'的a元素的href属性中
-    const initImgUrl = document.getElementById('bgLink').href
+    //获取图片地址 
+    // const initImgUrl = document.querySelector("div.img_uhd").style.backgroundImage.split('\"')[1]
+    const initImgUrl = 'https://cn.bing.com' + document.querySelector('.img_cont').style.backgroundImage.split('\"')[1]
 
     //设置图片信息
     getImgInfo(bingDownloadBtnConfig.imgInfo, initImgUrl)
@@ -130,10 +130,11 @@ window.addEventListener(
       addMenu(bingDownloadBtnConfig)
     }
   }, {
-    once: true
-  })
+  once: true
+})
 
 //当前日期偏移量 本日为0 bing可以查看前7天图片 0-7
+
 let dateOffset = 0
 
 //从本地存储中取得设置的信息写入到bingDownloadBtn相关项中
@@ -161,12 +162,12 @@ function getSavedSettings(info) {
 
 function getDateOffset() {
   //前一天
-  document.getElementById("sh_lt").addEventListener('click', function (e) {
+  document.getElementById("leftNav").addEventListener('click', function (e) {
     e.preventDefault()
     dateOffset = dateOffset === -7 ? -7 : dateOffset - 1
   })
   //后一天
-  document.getElementById("sh_rt").addEventListener('click', function (e) {
+  document.getElementById("rightNav").addEventListener('click', function (e) {
     e.preventDefault()
     dateOffset = dateOffset === 0 ? 0 : dateOffset + 1
   })
@@ -180,7 +181,7 @@ function getImgInfo(imgInfo, url) {
   // bingDownloadBtn.imgInfo.name = /id=.+?\.(jpg|png)/.exec(url)[0].replace('id=', '')
   //图片地址  根据分辨率设置修改图片地址 分辨率如1920x1080 如果未设置分辨率将使用默认分辨率
   url = imgInfo['resolution'] ? url.replace(/\d{4}x\d{3,4}/, imgInfo['resolution']) : url
-
+  console.log(url)
   /*图片名字  根据图片地址生成图片原始名字
   原始示例 AberystwythSeafront_ZH-CN9542789062_1920x1080.jpg
   原始名字分成三部分 baseName imgNO resolution
@@ -190,14 +191,6 @@ function getImgInfo(imgInfo, url) {
 
   //图片格式
   const imgFormat = /(jpg|png)$/.exec(nameInfo)[0]
-
-  // 图片描述信息
-  const imgDescription = document.getElementById(imgInfo['desc-ele-id']).title.split('©')
-
-  //日期信息
-  const now = new Date()
-
-  const imgDate = new Date(now.getTime() + dateOffset * (24 * 60 * 60 * 1000))
 
   //初始化图片命名相关的项
   let [baseName, imgNO, resolution, description, copyright, dateInfo] = ['', '', '', '', '', '']
@@ -217,13 +210,17 @@ function getImgInfo(imgInfo, url) {
           resolution = `_${nameInfo[2]}`.split('.')[0]
           break;
         case 'dateInfo':
+          //日期信息
+          const now = new Date()
+          const imgDate = new Date(now.getTime() + dateOffset * (24 * 60 * 60 * 1000))
           dateInfo = `_${imgDate.getFullYear()}-${imgDate.getMonth() + 1}-${imgDate.getDate()}`
           break;
         case 'description':
-          description = `_${imgDescription[0].replace(/\($/, '')}`
+          description = `_${document.querySelector('.musCardCont div.hr +a').textContent
+            }`
           break;
         case 'copyright':
-          copyright = `(©${imgDescription[1]}`
+          copyright = document.querySelector('.musCardCont div.copyright').textContent
           break;
         default:
           break;
@@ -274,8 +271,8 @@ function addBtn(info) {
     */
 
     //图片新url
-    let newUrl = document.getElementById('bgDiv').style.backgroundImage
-    newUrl = newUrl.substring(5, newUrl.length - 2)
+    let newUrl = document.querySelector("div.img_uhd").style.backgroundImage.split('\"')[1]
+
 
     //点击了前一天后一天按钮后更新图片下载地址和名字
     //没有点击前一天或后一天按钮 html中background-image不存在 则newUrl内容是空的
@@ -532,7 +529,7 @@ function getUserSettings() {
         break
       //分辨率
       case 'resolution':
-        if(item.checked){
+        if (item.checked) {
           imgInfo['resolution'] = item.getAttribute('data-img-resolution')
         }
         break
