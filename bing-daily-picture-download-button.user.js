@@ -15,10 +15,10 @@
 // @description:ja    Bingホームページに画像ダウンロードボタンを追加する。
 // @include     *://cn.bing.com/
 // @include     *://www.bing.com/
-// @include     *://www.bing.com/?*
-// @include     *://cn.bing.com/?*
+// @include     *://www.bing.com/*
+// @include     *://cn.bing.com/*
 // @run-at      document-end
-// @version     1.3.1
+// @version     1.3.2
 // @grant       none
 // ==/UserScript==
 
@@ -117,13 +117,20 @@ window.addEventListener(
     getSavedSettings(bingDownloadBtnConfig)  //从本地存储读取设置信息
 
     //获取图片地址 
-    // const initImgUrl = document.querySelector("div.img_uhd").style.backgroundImage.split('\"')[1]
-    const initImgUrl = 'https://cn.bing.com' + document.querySelector('.img_cont').style.backgroundImage.split('\"')[1]
+    // const origImgUrl = document.querySelector("div.img_uhd").style.backgroundImage.split('\"')[1]
+    let origImgUrl = document.querySelector('.img_cont').style.backgroundImage.split('\"')[1].split("&rf")[0]
+
+    // "https://s.cn.bing.net/th?id=OHR.GCThunderstorm_ZH-CN7535350453_1920x1080.jpg"
+    if (location.host !== 'www.bing.com') {
+      origImgUrl = location.protocol + '//' + location.host + origImgUrl.replace(/http.+\/th/, "/th")
+    } else {
+      origImgUrl = location.protocol + '//' + location.host + origImgUrl
+    }
 
     //设置图片信息
-    getImgInfo(bingDownloadBtnConfig.imgInfo, initImgUrl)
+    getImgInfo(bingDownloadBtnConfig.imgInfo, origImgUrl)
 
-    if (initImgUrl) {
+    if (origImgUrl) {
       //添加下载按钮
       addBtn(bingDownloadBtnConfig)
       //添加设置菜单

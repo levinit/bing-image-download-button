@@ -15,10 +15,10 @@
 // @description:ja    Bingホームページに画像ダウンロードボタンを追加する。
 // @include     *://cn.bing.com/
 // @include     *://www.bing.com/
-// @include     *://www.bing.com/?*
-// @include     *://cn.bing.com/?*
+// @include     *://www.bing.com/*
+// @include     *://cn.bing.com/*
 // @run-at      document-start
-// @version     0.2.0
+// @version     1.3.2
 // @grant       none
 // ==/UserScript==
 
@@ -52,19 +52,12 @@ const btnInfo = {
         text = '下載今日必應圖片'
         break;
       case 'ko':
-      case 'ko_KR':
         text = '오늘의 빙 이미지 다운로드'
         break;
       case 'ja':
-      case 'ja_JP':
         text = '今日のBing画像をダウンロードする'
         break
       case 'fr':
-      case 'fr_BE':
-      case 'fr_CA':
-      case 'fr_CH':
-      case 'fr_FR':
-      case 'fr_LU':
         text = 'Téléchargez les images de bing aujourd’hui'
         break
       default:
@@ -78,21 +71,27 @@ window.addEventListener(
   'load',
   function () {
     //进入bing页面后 图片地址写在了一个id为'bgLink'的a元素的href属性中
-    const initUrl ='https://cn.bing.com'+document.querySelector('.img_cont').style.backgroundImage.split('\"')[1]
-    if (initUrl) {
-      getImg(initUrl) //获取图片信息
+    let origImgUrl = document.querySelector('.img_cont').style.backgroundImage.split('\"')[1].split("&rf")[0]
+
+    // "https://s.cn.bing.net/th?id=OHR.GCThunderstorm_ZH-CN7535350453_1920x1080.jpg"
+    if (location.host !== 'www.bing.com') {
+      origImgUrl = location.protocol + '//' + location.host + origImgUrl.replace(/http.+\/th/, "/th")
+    } else {
+      origImgUrl = location.protocol + '//' + location.host + origImgUrl
+    }
+
+    if (origImgUrl) {
+      getImg(origImgUrl) //获取图片信息
       addBtn(btnInfo) //添加按钮
       refreshBtn(btnInfo) //绑定更新下载地址和图片名字的事件
     }
-  }, {
-    once: true
   })
 
 //-----获取图片信息
 function getImg(url) {
   btnInfo.url = url
   // const re = /(?<=id=).+\.(jpg|png)/  //慎用：某些浏览器还不支持向前查找
-  btnInfo.name = /id=.+?\.(jpg|png)/.exec(url)[0].replace('id=', '').replace('OHR.','').replace(/_.+\d{3,4}/,'')
+  btnInfo.name = /id=.+?\.(jpg|png)/.exec(url)[0].replace('id=', '').replace('OHR.', '').replace(/_.+\d{3,4}/, '')
 }
 
 //-------添加下载按钮
@@ -122,7 +121,7 @@ function refreshBtn(info) {
 
 
     //提取背景图片url（如果没有点击前一天或后一天按钮 background-image不存在 则newUrl内容是空的）
-    newUrl = newUrl ? newUrl.substring(5, newUrl.length-2) : ''
+    newUrl = newUrl ? newUrl.substring(5, newUrl.length - 2) : ''
 
     //比较前后两个url确定是否更新下载图片的地址和名字
     if (newUrl && this.href != location.origin + newUrl) {
