@@ -14,15 +14,15 @@
 // @description:fr    Ajouter le bouton de téléchargement d'image à la page d'accueil Bing.
 // @description:ja    Bingホームページに画像ダウンロードボタンを追加する。
 // @include     *://cn.bing.com/
+// @include     *://cn.bing.com/*
 // @include     *://www.bing.com/
 // @include     *://www.bing.com/*
-// @include     *://cn.bing.com/*
-// @run-at      document-start
-// @version     1.3.2
+// @run-at      document-end
+// @version     1.3.3
+// @homepage    https://github.com/levinit/bing-image-download-button
+// @supportURL  https://github.com/levinit/bing-image-download-button
 // @grant       none
 // ==/UserScript==
-
-//todo 自定义样式
 
 const btnInfo = {
   url: '',
@@ -73,13 +73,6 @@ window.addEventListener(
     //进入bing页面后 图片地址写在了一个id为'bgLink'的a元素的href属性中
     let origImgUrl = document.querySelector('.img_cont').style.backgroundImage.split('\"')[1].split("&rf")[0]
 
-    // "https://s.cn.bing.net/th?id=OHR.GCThunderstorm_ZH-CN7535350453_1920x1080.jpg"
-    if (location.host !== 'www.bing.com') {
-      origImgUrl = location.protocol + '//' + location.host + origImgUrl.replace(/http.+\/th/, "/th")
-    } else {
-      origImgUrl = location.protocol + '//' + location.host + origImgUrl
-    }
-
     if (origImgUrl) {
       getImg(origImgUrl) //获取图片信息
       addBtn(btnInfo) //添加按钮
@@ -89,9 +82,15 @@ window.addEventListener(
 
 //-----获取图片信息
 function getImg(url) {
-  btnInfo.url = url
   // const re = /(?<=id=).+\.(jpg|png)/  //慎用：某些浏览器还不支持向前查找
+  if (url.match(/s.+bing.net.+th/)) {
+    console.log("rewrite img url")
+    url = url.replace(/\/\/.+bing.net.+th/, "//" + location.host + "/th")
+  }
+
   btnInfo.name = /id=.+?\.(jpg|png)/.exec(url)[0].replace('id=', '').replace('OHR.', '').replace(/_.+\d{3,4}/, '')
+
+  btnInfo.url = url
 }
 
 //-------添加下载按钮

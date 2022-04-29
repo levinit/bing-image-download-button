@@ -14,11 +14,13 @@
 // @description:fr    Ajouter le bouton de téléchargement d'image à la page d'accueil Bing.
 // @description:ja    Bingホームページに画像ダウンロードボタンを追加する。
 // @include     *://cn.bing.com/
+// @include     *://cn.bing.com/*
 // @include     *://www.bing.com/
 // @include     *://www.bing.com/*
-// @include     *://cn.bing.com/*
 // @run-at      document-end
-// @version     1.3.2
+// @version     1.3.3
+// @homepage    https://github.com/levinit/bing-image-download-button
+// @supportURL  https://github.com/levinit/bing-image-download-button
 // @grant       none
 // ==/UserScript==
 
@@ -73,14 +75,14 @@ const bingDownloadBtnConfig = {
   imgInfo: {
     url: '',
     name: "",
-    'name-rule': {  //图片默认命名规则，true项的内容将写入到图片名中
+    'name-rule': { //图片默认命名规则，true项的内容将写入到图片名中
       //图片名字信息来自于图片的url 一般形如 flower_12345_1920x1080 形式
-      'baseName': true,  //基础名字
-      'imgNO': false,  //数字编号
-      'imgResolution': false,  //分辨率
-      'dateInfo': true,  //日期信息（从浏览器中获取的操作系统日期信息）
-      'description': true,  //描述信息（bing首页右下角 i 标志的按钮获取）
-      'copyright': false  //图片版权信息（同上）
+      'baseName': true, //基础名字
+      'imgNO': false, //数字编号
+      'imgResolution': false, //分辨率
+      'dateInfo': true, //日期信息（从浏览器中获取的操作系统日期信息）
+      'description': true, //描述信息（bing首页右下角 i 标志的按钮获取）
+      'copyright': false //图片版权信息（同上）
     },
     //bing提供的图片分辨率 不设置则使用默认 默认分辨率一般和当前系统设置、显示器分辨率有关
     resolution: '' //1366x768 1280x720 1920x1080
@@ -114,18 +116,11 @@ const bingDownloadBtnConfig = {
 window.addEventListener(
   'load',
   function () {
-    getSavedSettings(bingDownloadBtnConfig)  //从本地存储读取设置信息
+    getSavedSettings(bingDownloadBtnConfig) //从本地存储读取设置信息
 
     //获取图片地址 
     // const origImgUrl = document.querySelector("div.img_uhd").style.backgroundImage.split('\"')[1]
     let origImgUrl = document.querySelector('.img_cont').style.backgroundImage.split('\"')[1].split("&rf")[0]
-
-    // "https://s.cn.bing.net/th?id=OHR.GCThunderstorm_ZH-CN7535350453_1920x1080.jpg"
-    if (location.host !== 'www.bing.com') {
-      origImgUrl = location.protocol + '//' + location.host + origImgUrl.replace(/http.+\/th/, "/th")
-    } else {
-      origImgUrl = location.protocol + '//' + location.host + origImgUrl
-    }
 
     //设置图片信息
     getImgInfo(bingDownloadBtnConfig.imgInfo, origImgUrl)
@@ -184,11 +179,20 @@ function getDateOffset() {
 function getImgInfo(imgInfo, url) {
   //如果没有传入url 则使用imgInfo的url
   url = url ? url : imgInfo.url
+
+  // "https://s.cn.bing.net/th?id=OHR.GCThunderstorm_ZH-CN7535350453_1920x1080.jpg"
+  //change to -> "https://cn.bing.com/th?id=OHR.GCThunderstorm_ZH-CN7535350453_1920x1080.jpg&rf=LaDigue_1920x1080.jpg&pid=hp"
+
+  //s.cn.bing.net -> cn.bing.com
+  if (url.match(/s.+bing.net.+th/)) {
+    console.log("rewrite img url")
+    url = url.replace(/\/\/.+bing.net.+th/, "//" + location.host + "/th")
+  }
   // const re = /(?<=id=).+\.(jpg|png)/  //慎用：某些浏览器还不支持向前查找
   // bingDownloadBtn.imgInfo.name = /id=.+?\.(jpg|png)/.exec(url)[0].replace('id=', '')
   //图片地址  根据分辨率设置修改图片地址 分辨率如1920x1080 如果未设置分辨率将使用默认分辨率
-  url = imgInfo['resolution'] ? url.replace(/\d{4}x\d{3,4}/, imgInfo['resolution']) : url
-  console.log(url)
+  url = imgInfo.resolution ? url.replace(/\d{4}x\d{3,4}/, imgInfo.resolution) : url
+  console.log("img url is: ", url)
   /*图片名字  根据图片地址生成图片原始名字
   原始示例 AberystwythSeafront_ZH-CN9542789062_1920x1080.jpg
   原始名字分成三部分 baseName imgNO resolution
@@ -216,12 +220,13 @@ function getImgInfo(imgInfo, url) {
         case 'imgResolution':
           resolution = `_${nameInfo[2]}`.split('.')[0]
           break;
-        case 'dateInfo':
+        case 'dateInfo': {
           //日期信息
           const now = new Date()
           const imgDate = new Date(now.getTime() + dateOffset * (24 * 60 * 60 * 1000))
           dateInfo = `_${imgDate.getFullYear()}-${imgDate.getMonth() + 1}-${imgDate.getDate()}`
           break;
+        }
         case 'description':
           description = `_${document.querySelector('.musCardCont div.hr +a').textContent
             }`
@@ -264,8 +269,8 @@ function addBtn(info) {
     return btnCssText
   })(info.btnStyles)
 
-  btn.href = info.imgInfo.url  //图片下载地址
-  btn.download = info.imgInfo.name  //图片下载名字
+  btn.href = info.imgInfo.url
+  btn.download = info.imgInfo.name
   btn.title = `img name: ${info.imgInfo.name}
           右键打开设置菜单 | Right Click this button to open settings menu`
   document.body.appendChild(btn)
@@ -287,8 +292,8 @@ function addBtn(info) {
       getImgInfo(info.imgInfo, newUrl)
     }
     //将处理后的图片的url和name写入到下载按钮的属性中
-    this.href = info.imgInfo.url       //图片地址
-    this.download = info.imgInfo.name  //图片名字
+    this.href = info.imgInfo.url
+    this.download = info.imgInfo.name
   }
 
   //在下载按钮上右键可打开设置菜单
@@ -303,7 +308,7 @@ function addMenu(info) {
   const menuInfo = info.menuInfo
 
   //先前已经存储的图像分辨率设置信息
-  const savedImgResolution = info.imgInfo['resolution']
+  const savedImgResolution = info.imgInfo.resolution
   //先前已经存储的图像规则信息
   const savedImgNameRule = info.imgInfo['name-rule']
 
@@ -326,27 +331,27 @@ function addMenu(info) {
           <div>
             <label>NO.</label>
             <input class="img-info" type="checkbox" name="name-rule" data-img-name-rule="imgNO"
-              ${savedImgNameRule['imgNO'] ? 'checked' : ''} />
+              ${savedImgNameRule.imgNO ? 'checked' : ''} />
           </div>
           <div>
             <label>Resolution</label>
             <input class="img-info" type="checkbox" name="name-rule" data-img-name-rule="imgResolution"
-              ${savedImgNameRule['imgResolution'] ? 'checked' : ''} />
+              ${savedImgNameRule.imgResolution ? 'checked' : ''} />
           </div>
           <div>
             <label>Description</label>
             <input class="img-info" type="checkbox" name="name-rule" data-img-name-rule="description"
-              ${savedImgNameRule['description'] ? 'checked' : ''} />
+              ${savedImgNameRule.description ? 'checked' : ''} />
           </div>
           <div>
             <label>CopyRight</label>
             <input class="img-info" type="checkbox" name="name-rule" data-img-name-rule="copyright"
-              ${savedImgNameRule['copyright'] ? 'checked' : ''} />
+              ${savedImgNameRule.copyright ? 'checked' : ''} />
           </div>
           <div>
             <label>Date-Info</label>
             <input class="img-info" type="checkbox" name="name-rule" data-img-name-rule="dateInfo"
-              ${savedImgNameRule['dateInfo'] ? 'checked' : ''} />
+              ${savedImgNameRule.dateInfo ? 'checked' : ''} />
           </div>
         </li>
         <li>
@@ -493,7 +498,7 @@ function addMenu(info) {
       if (e.target.id === menuInfo.saveBtnId) {
         localStorage.setItem(info.localStoreKey, JSON.stringify(getUserSettings(info)))
         getSavedSettings(info)
-        getImgInfo(info.imgInfo)  //刷新图片相关信息
+        getImgInfo(info.imgInfo) //刷新图片相关信息
       }
     }
 
@@ -501,7 +506,7 @@ function addMenu(info) {
     if (e.target.id === menuInfo.resetBtnId) {
       localStorage.removeItem(info.localStoreKey)
       getSavedSettings(info)
-      getImgInfo(info.imgInfo)  //刷新图片相关信息
+      getImgInfo(info.imgInfo) //刷新图片相关信息
     }
 
   }
@@ -537,7 +542,7 @@ function getUserSettings() {
       //分辨率
       case 'resolution':
         if (item.checked) {
-          imgInfo['resolution'] = item.getAttribute('data-img-resolution')
+          imgInfo.resolution = item.getAttribute('data-img-resolution')
         }
         break
       default:
