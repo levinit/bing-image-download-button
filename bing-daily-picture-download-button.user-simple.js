@@ -67,18 +67,14 @@ const btnInfo = {
   }
 }
 
-window.addEventListener(
-  'load',
-  function () {
-    //进入bing页面后 图片地址写在了一个id为'bgLink'的a元素的href属性中
-    let origImgUrl = document.querySelector('.img_cont').style.backgroundImage.split('\"')[1].split("&rf")[0]
+//进入bing页面后 图片地址写在了一个id为'bgLink'的a元素的href属性中
+let origImgUrl = document.querySelector('.img_cont').style.backgroundImage.split('\"')[1].split("&rf")[0]
 
-    if (origImgUrl) {
-      getImg(origImgUrl) //获取图片信息
-      addBtn(btnInfo) //添加按钮
-      refreshBtn(btnInfo) //绑定更新下载地址和图片名字的事件
-    }
-  })
+if (origImgUrl) {
+  getImg(origImgUrl) //获取图片信息
+  addBtn(btnInfo) //添加按钮
+  refreshBtn(btnInfo) //绑定更新下载地址和图片名字的事件
+}
 
 //-----获取图片信息
 function getImg(url) {

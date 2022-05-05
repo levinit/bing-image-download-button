@@ -18,7 +18,7 @@
 // @include     *://www.bing.com/
 // @include     *://www.bing.com/*
 // @run-at      document-end
-// @version     1.3.3
+// @version     1.3.4
 // @homepage    https://github.com/levinit/bing-image-download-button
 // @supportURL  https://github.com/levinit/bing-image-download-button
 // @grant       none
@@ -81,7 +81,7 @@ const bingDownloadBtnConfig = {
       'imgNO': false, //数字编号
       'imgResolution': false, //分辨率
       'dateInfo': true, //日期信息（从浏览器中获取的操作系统日期信息）
-      'description': true, //描述信息（bing首页右下角 i 标志的按钮获取）
+      'description': true, //描述信息（bing首页右下角获取）
       'copyright': false //图片版权信息（同上）
     },
     //bing提供的图片分辨率 不设置则使用默认 默认分辨率一般和当前系统设置、显示器分辨率有关
@@ -111,29 +111,6 @@ const bingDownloadBtnConfig = {
   //本地存储使用的key 用于存储菜单中设置的信息
   localStoreKey: 'bingImgDownload'
 }
-
-//载入bing首页后读取本地已经存储的配置信息并添加下载按钮
-window.addEventListener(
-  'load',
-  function () {
-    getSavedSettings(bingDownloadBtnConfig) //从本地存储读取设置信息
-
-    //获取图片地址 
-    // const origImgUrl = document.querySelector("div.img_uhd").style.backgroundImage.split('\"')[1]
-    let origImgUrl = document.querySelector('.img_cont').style.backgroundImage.split('\"')[1].split("&rf")[0]
-
-    //设置图片信息
-    getImgInfo(bingDownloadBtnConfig.imgInfo, origImgUrl)
-
-    if (origImgUrl) {
-      //添加下载按钮
-      addBtn(bingDownloadBtnConfig)
-      //添加设置菜单
-      addMenu(bingDownloadBtnConfig)
-    }
-  }, {
-  once: true
-})
 
 //当前日期偏移量 本日为0 bing可以查看前7天图片 0-7
 
@@ -180,8 +157,7 @@ function getImgInfo(imgInfo, url) {
   //如果没有传入url 则使用imgInfo的url
   url = url ? url : imgInfo.url
 
-  // "https://s.cn.bing.net/th?id=OHR.GCThunderstorm_ZH-CN7535350453_1920x1080.jpg"
-  //change to -> "https://cn.bing.com/th?id=OHR.GCThunderstorm_ZH-CN7535350453_1920x1080.jpg&rf=LaDigue_1920x1080.jpg&pid=hp"
+  // "https://s.cn.bing.net/th?id=OHR.GCThunderstorm_ZH-CN7535350453_1920x1080.jpg" 改为 "https://cn.bing.com/th?id=OHR.GCThunderstorm_ZH-CN7535350453_1920x1080.jpg&rf=LaDigue_1920x1080.jpg&pid=hp"
 
   //s.cn.bing.net -> cn.bing.com
   if (url.match(/s.+bing.net.+th/)) {
@@ -197,7 +173,7 @@ function getImgInfo(imgInfo, url) {
   原始示例 AberystwythSeafront_ZH-CN9542789062_1920x1080.jpg
   原始名字分成三部分 baseName imgNO resolution
   */
-  //原始名字去掉前面的OHR.字样 使用_切分图片名
+  //原始名字去掉前面的OHR.字样 使用_分割
   const nameInfo = /id=.+?\.(jpg|png)/.exec(url)[0].replace('id=', '').replace(/^OHR\./, '').split('_')
 
   //图片格式
@@ -220,17 +196,26 @@ function getImgInfo(imgInfo, url) {
         case 'imgResolution':
           resolution = `_${nameInfo[2]}`.split('.')[0]
           break;
-        case 'dateInfo': {
-          //日期信息
-          const now = new Date()
-          const imgDate = new Date(now.getTime() + dateOffset * (24 * 60 * 60 * 1000))
-          dateInfo = `_${imgDate.getFullYear()}-${imgDate.getMonth() + 1}-${imgDate.getDate()}`
+        case 'dateInfo':
+          //日期 先从描述信息的日期中获取，如果没有则使用系统时间
+          try {
+            dateInfo = document.querySelector('.musCardCont div.hr +a').href.match(/Date:%\d+_/)[0].substr(-9, 8)
+          } catch (error) {
+            console.log(error)
+          } finally {
+            if (dateInfo === '' || dateInfo === undefined) {
+              const now = new Date()
+              const imgDate = new Date(now.getTime() + dateOffset * (24 * 60 * 60 * 1000))
+              dateInfo = `_${imgDate.getFullYear()}-${imgDate.getMonth() + 1}-${imgDate.getDate()}`
+            }
+          }
           break;
-        }
+        //图片描述
         case 'description':
           description = `_${document.querySelector('.musCardCont div.hr +a').textContent
             }`
           break;
+        //图片版权
         case 'copyright':
           copyright = document.querySelector('.musCardCont div.copyright').textContent
           break;
@@ -278,11 +263,8 @@ function addBtn(info) {
   //当光标移动到下载按钮上时立即更新图片下载信息
   btn.onmouseover = function () {
     // 注意：点击了前一天或后一天按钮后 需要刷新图片的下载地址
-    /* 新图片地址将写在id为bgDiv的元素的行内style的background-image属性中
-      background-image值示例：/th?id=OHR.GOTPath_ZH-CN1955635212_1920x1080.jpg&rf=LaDigue_1920x1080.jpg&pid=hp
-    */
 
-    //图片新url
+    //图片url
     let newUrl = document.querySelector("div.img_uhd").style.backgroundImage.split('\"')[1]
 
 
@@ -550,4 +532,22 @@ function getUserSettings() {
     }
   }
   return { btnStyles, imgInfo }
+}
+
+
+//+++++++++ 打开页面后的初始化 +++++++++
+getSavedSettings(bingDownloadBtnConfig) //从本地存储读取设置信息
+
+//获取图片地址 
+// const origImgUrl = document.querySelector("div.img_uhd").style.backgroundImage.split('\"')[1]
+let origImgUrl = document.querySelector('.img_cont').style.backgroundImage.split('\"')[1].split("&rf")[0]
+
+//设置图片信息
+getImgInfo(bingDownloadBtnConfig.imgInfo, origImgUrl)
+
+if (origImgUrl) {
+  //添加下载按钮
+  addBtn(bingDownloadBtnConfig)
+  //添加设置菜单
+  addMenu(bingDownloadBtnConfig)
 }
