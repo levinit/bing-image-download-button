@@ -153,19 +153,8 @@ function getDateOffset() {
 }
 
 //-----获取图片信息(根据设置规则修改）
-function getImgInfo(imgInfo, url) {
-  //如果没有传入url 则使用imgInfo的url
-  url = url ? url : imgInfo.url
-
-  // "https://s.cn.bing.net/th?id=OHR.GCThunderstorm_ZH-CN7535350453_1920x1080.jpg" 改为 "https://cn.bing.com/th?id=OHR.GCThunderstorm_ZH-CN7535350453_1920x1080.jpg&rf=LaDigue_1920x1080.jpg&pid=hp"
-
-  //s.cn.bing.net -> cn.bing.com
-  if (url.match(/s.+bing.net.+th/)) {
-    console.log("rewrite img url")
-    url = url.replace(/\/\/.+bing.net.+th/, "//" + location.host + "/th")
-  }
-  // const re = /(?<=id=).+\.(jpg|png)/  //慎用：某些浏览器还不支持向前查找
-  // bingDownloadBtn.imgInfo.name = /id=.+?\.(jpg|png)/.exec(url)[0].replace('id=', '')
+function getImgInfo(imgInfo) {
+  let url = document.querySelector('a.downloadLink').href.split('&rf')[0]
   //图片地址  根据分辨率设置修改图片地址 分辨率如1920x1080 如果未设置分辨率将使用默认分辨率
   url = imgInfo.resolution ? url.replace(/\d{4}x\d{3,4}/, imgInfo.resolution) : url
   console.log("img url is: ", url)
@@ -263,16 +252,7 @@ function addBtn(info) {
   //当光标移动到下载按钮上时立即更新图片下载信息
   btn.onmouseover = function () {
     // 注意：点击了前一天或后一天按钮后 需要刷新图片的下载地址
-
-    //图片url
-    let newUrl = document.querySelector("div.img_uhd").style.backgroundImage.split('\"')[1]
-
-
-    //点击了前一天后一天按钮后更新图片下载地址和名字
-    //没有点击前一天或后一天按钮 html中background-image不存在 则newUrl内容是空的
-    if (newUrl) {
-      getImgInfo(info.imgInfo, newUrl)
-    }
+    getImgInfo(info.imgInfo)
     //将处理后的图片的url和name写入到下载按钮的属性中
     this.href = info.imgInfo.url
     this.download = info.imgInfo.name
@@ -536,18 +516,11 @@ function getUserSettings() {
 
 
 //+++++++++ 打开页面后的初始化 +++++++++
-getSavedSettings(bingDownloadBtnConfig) //从本地存储读取设置信息
-
-//获取图片地址 
-// const origImgUrl = document.querySelector("div.img_uhd").style.backgroundImage.split('\"')[1]
-let origImgUrl = document.querySelector('.img_cont').style.backgroundImage.split('\"')[1].split("&rf")[0]
-
+//从本地存储读取设置信息
+getSavedSettings(bingDownloadBtnConfig)
 //设置图片信息
-getImgInfo(bingDownloadBtnConfig.imgInfo, origImgUrl)
-
-if (origImgUrl) {
-  //添加下载按钮
-  addBtn(bingDownloadBtnConfig)
-  //添加设置菜单
-  addMenu(bingDownloadBtnConfig)
-}
+getImgInfo(bingDownloadBtnConfig.imgInfo)
+//添加下载按钮
+addBtn(bingDownloadBtnConfig)
+//添加设置菜单
+addMenu(bingDownloadBtnConfig)
