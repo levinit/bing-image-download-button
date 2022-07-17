@@ -18,7 +18,7 @@
 // @include     *://www.bing.com/
 // @include     *://www.bing.com/*
 // @run-at      document-end
-// @version     1.3.4
+// @version     1.3.6
 // @homepage    https://github.com/levinit/bing-image-download-button
 // @supportURL  https://github.com/levinit/bing-image-download-button
 // @grant       none
@@ -188,7 +188,7 @@ function getImgInfo(imgInfo) {
         case 'dateInfo':
           //日期 先从描述信息的日期中获取，如果没有则使用系统时间
           try {
-            dateInfo = document.querySelector('.musCardCont div.hr +a').href.match(/Date:%\d+_/)[0].substr(-9, 8)
+            dateInfo = document.querySelector('.musCardCont a.title').href.match(/Date:%\d+_/)[0].substr(-9, 8)
           } catch (error) {
             console.log(error)
           } finally {
@@ -201,7 +201,7 @@ function getImgInfo(imgInfo) {
           break;
         //图片描述
         case 'description':
-          description = `_${document.querySelector('.musCardCont div.hr +a').textContent
+          description = `_${document.querySelector('.musCardCont a.title').textContent
             }`
           break;
         //图片版权
