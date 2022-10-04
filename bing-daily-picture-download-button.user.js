@@ -18,7 +18,7 @@
 // @include     *://www.bing.com/
 // @include     *://www.bing.com/*
 // @run-at      document-end
-// @version     1.3.6
+// @version     1.3.7
 // @homepageURL   https://github.com/levinit/bing-image-download-button
 // @grant       none
 // ==/UserScript==
@@ -73,7 +73,7 @@ const bingDownloadBtnConfig = {
   //当前要下载的bing图片的信息
   imgInfo: {
     url: '',
-    name: "",
+    name: '',
     'name-rule': { //图片默认命名规则，true项的内容将写入到图片名中
       //图片名字信息来自于图片的url 一般形如 flower_12345_1920x1080 形式
       'baseName': true, //基础名字
