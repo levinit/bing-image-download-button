@@ -19,8 +19,7 @@
 // @include     *://www.bing.com/*
 // @run-at      document-end
 // @version     1.3.6
-// @homepage    https://github.com/levinit/bing-image-download-button
-// @supportURL  https://github.com/levinit/bing-image-download-button
+// @homepageURL   https://github.com/levinit/bing-image-download-button
 // @grant       none
 // ==/UserScript==
 
