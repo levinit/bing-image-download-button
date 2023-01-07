@@ -18,7 +18,7 @@
 // @include     *://www.bing.com/
 // @include     *://www.bing.com/*
 // @run-at      document-end
-// @version     1.3.7
+// @version     1.3.8
 // @homepageURL   https://github.com/levinit/bing-image-download-button
 // @grant       none
 // ==/UserScript==
@@ -34,7 +34,8 @@ const bingDownloadBtnConfig = {
     'right': '20%',
     'top': '12.5%',
     'background': '#c3d1cf94',
-    'position': 'fixed'
+    'position': 'fixed',
+    'z-index': 9999
   },
   //下载按钮上的文字
   btnText() {
