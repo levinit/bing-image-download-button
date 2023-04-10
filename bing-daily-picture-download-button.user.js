@@ -18,7 +18,7 @@
 // @include     *://www.bing.com/
 // @include     *://www.bing.com/*
 // @run-at      document-end
-// @version     1.3.8
+// @version     1.3.9
 // @homepageURL   https://github.com/levinit/bing-image-download-button
 // @grant       none
 // ==/UserScript==
@@ -85,7 +85,7 @@ const bingDownloadBtnConfig = {
       'copyright': false //图片版权信息（同上）
     },
     //bing提供的图片分辨率 不设置则使用默认 默认分辨率一般和当前系统设置、显示器分辨率有关
-    resolution: '' //1366x768 1280x720 1920x1080
+    resolution: 'UHD' //1366x768 1280x720 1920x1080
   },
   //设置菜单
   menuInfo: {
@@ -414,6 +414,7 @@ function addMenu(info) {
 
     #btn-settings .about a {
       margin-right: 1em;
+      text-decoration: underline;
     }
 
     #btn-settings footer {
